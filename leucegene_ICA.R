@@ -68,6 +68,7 @@ dat_ICA[1:3,1:3]
 # A: mixing matrix; rows: samples, cols: ICs
 # S: source matrix; rows: gens, cols:ICs
 
+#*********** JADE may not converge (try reduce number of genes, or nb of ICs)
 Jade_ICA1 <- runICA(method = "JADE", X = dat_ICA ,nbComp = 50, tol=10^-6, maxit = 1000)
 Jade_ICA2 <- runICA(method = "JADE", X = dat_ICA ,nbComp = 50, tol=10^-6, maxit = 1000)
 
