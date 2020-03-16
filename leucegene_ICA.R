@@ -125,4 +125,12 @@ heatmap(cor_ICA_fast_ward)
 # cor_ICA_fast_13 <- cor(fast_ICA1$S, fast_ICA3$S)
 # heatmap(cor_ICA_fast_13)
 
+save(fast_ICA1, fast_ICA2, fast_ICA3, fast_ICA4, file = "fastICA_1000g50ICs_leucegene.RData")
+fast <- load("fastICA_1000g50ICs_leucegene.RData")
+fast
+
+## ------------- investigate IC1 of fastICA1 -------------
+IC1 <- fast_ICA1$S[,1]
+sort(abs(IC1),decreasing = TRUE)[1:20]
+# most of the high projection genes in thic IC is related to sex
 
