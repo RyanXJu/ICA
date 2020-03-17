@@ -1,4 +1,6 @@
 library(reshape2)
+library(gplots)
+
 
 setwd("/u/juxiao/AML_ICA")
 getwd()
@@ -78,7 +80,10 @@ for (t in colnames(datTraits)) {
 
 colnames(IC_traits_matrix) <- colnames(datTraits)
 rownames(IC_traits_matrix) <- paste(rep("IC", 50) , c(1:50), sep="")
-heatmap(abs(IC_traits_matrix))
+heatmap(IC_traits_matrix)
+
+
+heatmap.2(IC_traits_matrix, col=redgreen(100), trace="none") 
 
 ###############################################################
 ##### cytogenetic
@@ -86,8 +91,6 @@ heatmap(abs(IC_traits_matrix))
 cytogenetic <- allTraits[,c("sample_id","cytogenetic.risk", "cytogenetic.subgroup")]
 unique(cytogenetic.subgroup)
 table(cytogenetic.subgroup)
-
-
 
 cyto_group <- dcast(cytogenetic, sample_id ~ cytogenetic.subgroup)
 rownames(cyto_group)<-cyto_group$sample_id
@@ -133,4 +136,11 @@ for (c in colnames(cyto_group)) {
 
 colnames(IC_cyto_matrix) <- colnames(cyto_group)
 rownames(IC_cyto_matrix) <- paste(rep("IC", 50) , c(1:50), sep="")
-heatmap(abs(IC_cyto_matrix))
+heatmap(IC_cyto_matrix)
+
+
+heatmap.2(IC_cyto_matrix, col=redgreen(100), 
+          density.info="none", trace="none") 
+### IC12 is highly correlated with MLL
+IC12 <- fast_ICA1$S[,12]
+sort(abs(IC12),decreasing = TRUE)[1:100]

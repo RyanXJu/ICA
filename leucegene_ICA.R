@@ -1,6 +1,11 @@
 library(MineICA)
 library(dplyr)
 
+library(ComplexHeatmap)
+library(circlize)
+col_rnorm = colorRamp2(c(-1, 0, 1), c("white", "yellow", "red"))
+
+
 setwd("/u/juxiao/AML_ICA")
 getwd()
 
@@ -43,7 +48,7 @@ dim(datExpr0)
 IQR_genes <- apply(datExpr0, 2, IQR, na.rm = TRUE)
 
 # sorting the genes by IQR, keep 10k genes with largest IQR
-ICA_genes <- names(sort(IQR_genes, decreasing = TRUE)[1:2000])
+ICA_genes <- names(sort(IQR_genes, decreasing = TRUE)[1:10000])
 ICA_genes
 
 dat_ICA <- t(datExpr0[,ICA_genes])
@@ -69,13 +74,14 @@ dat_ICA[1:3,1:3]
 # S: source matrix; rows: gens, cols:ICs
 
 #*********** JADE may not converge (try reduce number of genes, or nb of ICs)
-Jade_ICA1 <- runICA(method = "JADE", X = dat_ICA ,nbComp = 50, tol=10^-6, maxit = 1000)
-Jade_ICA2 <- runICA(method = "JADE", X = dat_ICA ,nbComp = 50, tol=10^-6, maxit = 1000)
+Jade_ICA1 <- runICA(method = "JADE", X = dat_ICA ,nbComp = 40, tol=10^-6, maxit = 1000)
+Jade_ICA2 <- runICA(method = "JADE", X = dat_ICA ,nbComp = 40, tol=10^-6, maxit = 1000)
 
 cor_ICA_Jade <-cor(Jade_ICA1$S, Jade_ICA2$S)
 
 # JADE is parametric, ICs are identical in each replicates
-heatmap(cor_ICA_Jade)
+
+Heatmap(cor_ICA_Jade, col = col_rnorm)
 
 ###########################
 ## fastICA
