@@ -1,9 +1,7 @@
 library(MineICA)
 library(dplyr)
 
-library(ComplexHeatmap)
-library(circlize)
-col_rnorm = colorRamp2(c(-1, 0, 1), c("white", "yellow", "red"))
+library(gplots)
 
 
 setwd("/u/juxiao/AML_ICA")
@@ -76,12 +74,19 @@ dat_ICA[1:3,1:3]
 #*********** JADE may not converge (try reduce number of genes, or nb of ICs)
 Jade_ICA1 <- runICA(method = "JADE", X = dat_ICA ,nbComp = 40, tol=10^-6, maxit = 1000)
 Jade_ICA2 <- runICA(method = "JADE", X = dat_ICA ,nbComp = 40, tol=10^-6, maxit = 1000)
+fast_ICA10k40ics <- runICA(method = "fastICA", X = t(dat_ICA) ,nbComp = 40, tol=10^-6, maxit = 1000, 
+                           alg.type =  "parallel",fun = "logcosh")
 
 cor_ICA_Jade <-cor(Jade_ICA1$S, Jade_ICA2$S)
 
 # JADE is parametric, ICs are identical in each replicates
+heatmap(cor_ICA_Jade)
+save(Jade_ICA1, Jade_ICA2, file = "jade_10000g40ICs_leucegene.RData")
+jade <- load("jade_10000g40ICs_leucegene.RData")
+jade
 
-Heatmap(cor_ICA_Jade, col = col_rnorm)
+heatmap.2(cor(Jade_ICA1$S, fast_ICA10k40ics$S), col= redgreen(100))
+
 
 ###########################
 ## fastICA
@@ -108,6 +113,7 @@ fast_ICA2 <- clusterFastICARuns(X=as.matrix(dat_ICA), nbComp=50, alg.type="defla
 cor_ICA_fast <- cor(fast_ICA1$S, fast_ICA2$S)
 
 heatmap(cor_ICA_fast)
+heatmap.2(cor_ICA_fast, col=redgreen(100),trace="none")
 # correlations matrix between ICs in two different fastICA runs.
 # shows that, ICs found by fastICA are not identical, but exist
 # a strong and unique association between them, 
@@ -128,13 +134,20 @@ fast_ICA4 <- clusterFastICARuns(X=as.matrix(dat_ICA), nbComp=50, alg.type="defla
 
 cor_ICA_fast_ward <- cor(fast_ICA3$S, fast_ICA4$S)
 heatmap(cor_ICA_fast_ward)
+heatmap.2(cor_ICA_fast_ward, col=redgreen(100))
 
 # cor_ICA_fast_13 <- cor(fast_ICA1$S, fast_ICA3$S)
 # heatmap(cor_ICA_fast_13)
 
-save(fast_ICA1, fast_ICA2, fast_ICA3, fast_ICA4, file = "fastICA_1000g50ICs_leucegene.RData")
-fast <- load("fastICA_1000g50ICs_leucegene.RData")
+save(fast_ICA1, fast_ICA2, fast_ICA3, fast_ICA4, file = "fastICA_10000g50ICs_leucegene.RData")
+fast <- load("fastICA_10000g50ICs_leucegene.RData")
 fast
+
+
+### correlation between ICs found by fastICA and JADE
+heatmap.2(cor(Jade_ICA1$S, fast_ICA1$S), col = redgreen(100))
+
+
 
 ## ------------- investigate IC1 of fastICA1 -------------
 IC1 <- fast_ICA1$S[,1]
