@@ -123,6 +123,7 @@ colnames(cyto_group) <- c("MLL_tras", "t15_17", "inter_abn",
                           "inv16", "EVI1", "t6_9",
                           "germinal", "Monosomy17", "Hyperdiploid",
                           "Undetermined", "NIP98","germinal_notfinal")
+save(cyto_group, file = "cyto_group.R")
 
 # ICs vs cytogroup
 IC_cyto_matrix <- c()
