@@ -63,17 +63,84 @@ table(pred,y)
 compare <- as.data.frame(cbind(pred, y))
 compare[compare$pred != compare$y,]
 
+# Il y avait 07H060 et 10H029, tous deux M, 
+# mais leur karyotype indique qu’ils ont perdu 
+# le chr Y dans leurs cellules cancéreuses (45,X,-Y)
+
+
+
+# 08H062 a un karyotype compliqué : 
+# 47,XX,+21[15]/46,XX,i(21)(q10)[2]/46,XX[3] 
+
+#07H060,10H029,08H062
+x_3 <- x[c(rownames(x)[3:5],"X07H060","X10H029","X08H062"),]
+indx <- match(colnames(x), locs$gene_id)
+colnames(x_3) <- locs$Gene[indx]
+
+x_3t <-as.data.frame( t(x_3))
+x_3t$loc <- locs$Location[indx]
+x_3t
 
 ###################### randomForest ###################
 # install.packages("randomForest")
 library(randomForest)
 
-rf_classifier = randomForest(y~.,data =x, ntree=100, mtry=2, importance=TRUE)
+rf_classifier = randomForest(y~.,data =x, 
+                             ntree=100, mtry=10,
+                             nodesize = 5,
+                             importance=TRUE)
 class(rf_classifier)
 str(rf_classifier)
+# importance of the features (genes)
+importance(rf_classifier)
 
 predictForest <- round(predict(rf_classifier, newdata = x))
 table(y, predictForest)
 
 compareRF <- as.data.frame(cbind(predictForest, y))
 compareRF[compareRF$predictForest != compare$y,]
+
+
+#################### cross validation ####################
+# install.packages("caret")
+library(caret)
+# https://machinelearningmastery.com/tune-machine-learning-algorithms-in-r/
+
+# split data into training and testing, p=0.75
+set.seed(100)
+inTrain <- createDataPartition(
+  y = y,
+  ## the outcome data are needed
+  p = .75,
+  ## The percentage of data in the
+  ## training set
+  list = FALSE
+  )
+str(inTrain)
+
+
+training <- x[ inTrain,]
+testing  <- x[-inTrain,]
+
+y_training <- y[ inTrain]
+y_testing <- y[-inTrain]
+
+nrow(training)
+nrow(testing)
+
+# train rf model with training data
+rf_1 = randomForest(y_training~.,data =training, 
+                             ntree=100, mtry=10,
+                             nodesize = 5,
+                             importance=TRUE)
+class(rf_1)
+str(rf_1)
+# importance of the features (genes)
+importance(rf_1)
+
+# performance
+print(rf_1)
+
+pred_rf1<- round(predict(rf_1, newdata = testing))
+table(y_testing, pred_rf1)
+

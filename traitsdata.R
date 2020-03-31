@@ -63,38 +63,88 @@ datTraits[1:3,1:6]
 ###############################################################
 cytogenetic <- allTraits[,c("sample_id","cytogenetic.risk", "cytogenetic.subgroup")]
 unique(cytogenetic$cytogenetic.subgroup)
+
+## rename subgroups
 table(cytogenetic$cytogenetic.subgroup)
+# Complex (3 and more chromosomal abnormalities) 
+# 102 
+cytogenetic[cytogenetic == "Complex (3 and more chromosomal abnormalities)"] <- "Complex"
+
+# EVI1 rearrangements (+EVI1 FISH positive) (Irrespective of additional cytogenetic abnormalities) 
+# 16 
+cytogenetic[cytogenetic == "EVI1 rearrangements (+EVI1 FISH positive) (Irrespective of additional cytogenetic abnormalities)"] <- "EVI1"
+
+# germinal cell and hematological cancers with i(12)(p10) 
+# 1 
+cytogenetic[cytogenetic == "germinal cell and hematological cancers with i(12)(p10)"] <- "germinal"
+
+# germinal cell and hematological cancers with i(12)(p10)_not final 
+# 1 
+cytogenetic[cytogenetic == "germinal cell and hematological cancers with i(12)(p10)_not final"] <- "germinal_notfinal"
+
+# Hyperdiploid numerical abnormalities only 
+# 2 
+cytogenetic[cytogenetic == "Hyperdiploid numerical abnormalities only"] <- "Hyperdiploid"
+
+# Intermediate abnormal karyotype (except isolated trisomy/tetrasomy 8) 
+# 97 
+cytogenetic[cytogenetic == "Intermediate abnormal karyotype (except isolated trisomy/tetrasomy 8)"] <- "inter_abn"
+
+# inv(16)(p13.1q22)/t(16;16)(p13.1;q22)/CBFB-MYH11 (Irrespective of additional cytogenetic abnormalities) 
+# 32 
+cytogenetic[cytogenetic == "inv(16)(p13.1q22)/t(16;16)(p13.1;q22)/CBFB-MYH11 (Irrespective of additional cytogenetic abnormalities)"] <- "inv16"
+
+# MLL translocations (+MLL FISH positive) (Irrespective of additional cytogenetic abnormalities) 
+# 48
+cytogenetic[cytogenetic == "MLL translocations (+MLL FISH positive) (Irrespective of additional cytogenetic abnormalities)"] <- "MLL_tras"
+
+# Monosomy 5/ 5q-/Monosomy 7/ 7q- (less than 3 chromosomal abnormalities) 
+# 24 
+cytogenetic[cytogenetic == "Monosomy 5/ 5q-/Monosomy 7/ 7q- (less than 3 chromosomal abnormalities)"] <- "Monosomy5"
+
+# Monosomy17/del17p (less than 3 chromosomal abnormalities) 
+# 2
+cytogenetic[cytogenetic == "Monosomy17/del17p (less than 3 chromosomal abnormalities)"] <- "Monosomy17"
+
+# Normal karyotype 
+# 286 
+cytogenetic[cytogenetic == "Normal karyotype"] <- "Normal"
+
+# NUP98 translocations (+NUP98 FISH positive) (Irrespective of additional cytogenetic abnormalities) 
+# 1 
+cytogenetic[cytogenetic == "NUP98 translocations (+NUP98 FISH positive) (Irrespective of additional cytogenetic abnormalities)"] <- "NUP98_trans"
+
+# NUP98-NSD1(caryotype normal) 
+# 5 
+cytogenetic[cytogenetic == "NUP98-NSD1(caryotype normal)"] <- "NUP98_NSD1"
+
+# t(15;17)(q24;q21)/PML-RARA (Irrespective of additional cytogenetic abnormalities) 
+# 30 
+cytogenetic[cytogenetic == "t(15;17)(q24;q21)/PML-RARA (Irrespective of additional cytogenetic abnormalities)"] <- "t15_17"
+
+# t(6;9)(p23;q34) (Irrespective of additional cytogenetic abnormalities) 
+# 3 
+cytogenetic[cytogenetic == "t(6;9)(p23;q34) (Irrespective of additional cytogenetic abnormalities)"] <- "t6_9"
+
+# t(8;21)(q22;q22)/RUNX1-RUNX1T1 (Irrespective of additional cytogenetic abnormalities) 
+# 20 
+cytogenetic[cytogenetic == "t(8;21)(q22;q22)/RUNX1-RUNX1T1 (Irrespective of additional cytogenetic abnormalities)"] <- "t8_21"
+
+# Trisomy/tetrasomy 8 (isolated) 
+# 20 
+cytogenetic[cytogenetic == "Trisomy/tetrasomy 8 (isolated)"] <- "Trisomy"
+
+# Undetermined 
+# 1 
+cytogenetic[cytogenetic == "Undetermined"] <- "Undetermined"
+
 
 cyto_group <- dcast(cytogenetic, sample_id ~ cytogenetic.subgroup)
 rownames(cyto_group)<-cyto_group$sample_id
 cyto_group<-cyto_group[2:19]
 cyto_group <- !is.na(cyto_group)
-# # rename cols
-# [1] "MLL translocations (+MLL FISH positive) (Irrespective of additional cytogenetic abnormalities)"         
-# [2] "t(15;17)(q24;q21)/PML-RARA (Irrespective of additional cytogenetic abnormalities)"                      
-# [3] "Intermediate abnormal karyotype (except isolated trisomy/tetrasomy 8)"                                  
-# [4] "Normal karyotype"                                                                                       
-# [5] "Complex (3 and more chromosomal abnormalities)"                                                         
-# [6] "Trisomy/tetrasomy 8 (isolated)"                                                                         
-# [7] "Monosomy 5/ 5q-/Monosomy 7/ 7q- (less than 3 chromosomal abnormalities)"                                
-# [8] "NUP98-NSD1(caryotype normal)"                                                                           
-# [9] "t(8;21)(q22;q22)/RUNX1-RUNX1T1 (Irrespective of additional cytogenetic abnormalities)"                  
-# [10] "inv(16)(p13.1q22)/t(16;16)(p13.1;q22)/CBFB-MYH11 (Irrespective of additional cytogenetic abnormalities)"
-# [11] "EVI1 rearrangements (+EVI1 FISH positive) (Irrespective of additional cytogenetic abnormalities)"       
-# [12] "t(6;9)(p23;q34) (Irrespective of additional cytogenetic abnormalities)"                                 
-# [13] "germinal cell and hematological cancers with i(12)(p10)"                                                
-# [14] "Monosomy17/del17p (less than 3 chromosomal abnormalities)"                                              
-# [15] "Hyperdiploid numerical abnormalities only"                                                              
-# [16] "Undetermined"                                                                                           
-# [17] "NUP98 translocations (+NUP98 FISH positive) (Irrespective of additional cytogenetic abnormalities)"     
-# [18] "germinal cell and hematological cancers with i(12)(p10)_not final" 
 
-colnames(cyto_group) <- c("MLL_tras", "t15_17", "inter_abn",
-                          "Normal", "Complex","Trisomy",
-                          "Monosomy5", "NUP98_NSD1","t8_21",
-                          "inv16", "EVI1", "t6_9",
-                          "germinal", "Monosomy17", "Hyperdiploid",
-                          "Undetermined", "NIP98","germinal_notfinal")
+colSums(cyto_group)
 
 
 save(datTraits, cyto_group, file = "datTraits.RData")

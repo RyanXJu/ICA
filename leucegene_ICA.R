@@ -1,6 +1,5 @@
 library(MineICA)
 library(dplyr)
-
 library(gplots)
 
 
@@ -13,7 +12,7 @@ getwd()
 # load rna-seq data (normalized)
 fn_TPM_resm = "/u/juxiao/Datasets/leucegene_data/genes_TPM.unstranded.annotated.tsv"
 TPM_resm = read.delim(fn_TPM_resm)
-# dim(TPM_resm)
+dim(TPM_resm)
 # [1] 60609   697
 # note: there are only 691 samples in the 
 
@@ -48,6 +47,8 @@ IQR_genes <- apply(datExpr0, 2, IQR, na.rm = TRUE)
 # sorting the genes by IQR, keep 10k genes with largest IQR
 ICA_genes <- names(sort(IQR_genes, decreasing = TRUE)[1:10000])
 ICA_genes
+#** 9457 genes overlap if use filterByExpr **
+
 
 dat_ICA <- t(datExpr0[,ICA_genes])
 dim(dat_ICA)
@@ -58,7 +59,7 @@ dat_ICA[1:3,1:3]
 # ENSG00000067048.17 0.05658353 5.7319978 0.000000
 
 #########################
-### JADE # not converge with 2800 genes
+### JADE #### 
 
 ## https://www.rasch.org/rmt/rmt11b.htm
 ## "Lack of convergence is an indication that the data do not fit the model well, 

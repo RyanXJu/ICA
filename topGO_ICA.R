@@ -93,5 +93,5 @@ showSigOfNodes(GOdata, score(resultKS),
 # check locations of the genes with high projections
 genes_highproj <- geneList[geneSelFunc(geneList)] 
 genes_highproj[sort(abs(genes_highproj),decreasing = TRUE)]
-locs <- TPM_resm[TPM_resm$Gene %in% names(genes_highproj), c("Gene","Location")]
+locs <- TPM_resm[TPM_resm$Gene %in% names(genes_highproj), c("gene_id","Gene","Location")]
 locs

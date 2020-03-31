@@ -121,6 +121,8 @@ JADE_cytogenetic <- ICs_traits_cor(Jade_ICA1$A, cyto_group)
 heatmap(JADE_cytogenetic)
 heatmap.2(JADE_cytogenetic, col=redgreen(100), trace="none") 
 
+# IC9 seems highly correlated with MLL
+JADE_cytogenetic[, "MLL_tras"]
 
 #########################################################################
 ### enriched genes in each IC 
@@ -154,7 +156,7 @@ for (i in 1:40){
   ic_genes <- genes_symbol[genes_symbol$ensembl_gene_id_version %in% names(projection) ,]
   ic_genes$projection <- projection[c(as.vector(ic_genes$ensembl_gene_id_version))]
   
-  write.xlsx(ic_genes,file='Jade_avelog10kgenes40ics_enrichedgenes1.xlsx',sheetName = paste("IC",i,sep = ""),append = T)
+  write.xlsx(ic_genes,file='Jade_avelog10kgenes40ics_enrichedgenes.xlsx',sheetName = paste("IC",i,sep = ""),append = T)
 }
 
 
