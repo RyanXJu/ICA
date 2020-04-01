@@ -1,12 +1,7 @@
 library(reshape2)
 
-setwd("/u/juxiao/AML_ICA")
+setwd("/u/juxiao/AML_ICA/ICA")
 getwd()
-
-
-### load in fastICA results
-fast <- load("fastICA_10000g50ICs_leucegene.RData")
-fast
 
 #########################
 ## clinical trait

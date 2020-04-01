@@ -3,11 +3,11 @@ library(dplyr)
 library(gplots)
 
 
-setwd("/u/juxiao/AML_ICA")
+setwd("/u/juxiao/AML_ICA/ICA")
 getwd()
 
 #########################
-## gene expression data
+### gene expression data
 #########################
 # load rna-seq data (normalized)
 fn_TPM_resm = "/u/juxiao/Datasets/leucegene_data/genes_TPM.unstranded.annotated.tsv"
@@ -43,8 +43,13 @@ dim(datExpr0)
 ### keep 10k genes sorted by IQR
 ################################
 IQR_genes <- apply(datExpr0, 2, IQR, na.rm = TRUE)
+expr_iqr <- sort(IQR_genes, decreasing = TRUE)
+plot(expr_iqr)
+abline(h=0.7, col="red")
+abline(v=10000, col="red")
 
-# sorting the genes by IQR, keep 10k genes with largest IQR
+# sorting the genes by IQR (Interquartile Range), keep 10k genes with largest IQR
+# definition: The interquartile range is equal to Q3 minus Q1
 ICA_genes <- names(sort(IQR_genes, decreasing = TRUE)[1:10000])
 ICA_genes
 #** 9457 genes overlap if use filterByExpr **
@@ -75,40 +80,40 @@ dat_ICA[1:3,1:3]
 #*********** JADE may not converge (try reduce number of genes, or nb of ICs)
 Jade_ICA1 <- runICA(method = "JADE", X = dat_ICA ,nbComp = 40, tol=10^-6, maxit = 1000)
 Jade_ICA2 <- runICA(method = "JADE", X = dat_ICA ,nbComp = 40, tol=10^-6, maxit = 1000)
-fast_ICA10k40ics <- runICA(method = "fastICA", X = t(dat_ICA) ,nbComp = 40, tol=10^-6, maxit = 1000, 
-                           alg.type =  "parallel",fun = "logcosh")
 
 cor_ICA_Jade <-cor(Jade_ICA1$S, Jade_ICA2$S)
 
 # JADE is parametric, ICs are identical in each replicates
 heatmap(cor_ICA_Jade)
-save(Jade_ICA1, Jade_ICA2, file = "jade_10000g40ICs_leucegene.RData")
-jade <- load("jade_10000g40ICs_leucegene.RData")
+save(Jade_ICA1, Jade_ICA2, file = "jade_avelog10kgenes40ICs_leucegene.RData")
+jade <- load("jade_avelog10kgenes40ICs_leucegene.RData")
 jade
 
-heatmap.2(cor(Jade_ICA1$S, fast_ICA10k40ics$S), col= redgreen(100))
 
+# Jade_ICA1_30 <- runICA(method = "JADE", X = dat_ICA ,nbComp = 30, tol=10^-6, maxit = 1000)
+# cor_ICA_Jade2 <-cor(Jade_ICA1$S, Jade_ICA1_30$S)
+# heatmap(cor_ICA_Jade2)
+# heatmap.2(cor_ICA_Jade2, col=redgreen(100),trace="none")
 
 ###########################
 ## fastICA
-##########################
 
 # fastICA can handle more genes
 # sorting the genes by IQR, keep 10k genes with largest IQR
-ICA_genes <- names(sort(IQR_genes, decreasing = TRUE)[1:10000])
-ICA_genes
-
-dat_ICA <- t(datExpr0[,ICA_genes])
-dim(dat_ICA)
-dat_ICA[1:3,1:3]
+# ICA_genes <- names(sort(IQR_genes, decreasing = TRUE)[1:10000])
+# ICA_genes
+# 
+# dat_ICA <- t(datExpr0[,ICA_genes])
+# dim(dat_ICA)
+# dat_ICA[1:3,1:3]
 
 
 ## Random initializations are used for each iteration of FastICA
 ## Estimates are clustered using hierarchical clustering with average linkage
-fast_ICA1 <- clusterFastICARuns(X=as.matrix(dat_ICA), nbComp=50, alg.type="deflation",
+fast_ICA1 <- clusterFastICARuns(X=as.matrix(dat_ICA), nbComp=40, alg.type="deflation",
                                 nbIt=3, funClus="hclust", method="average")
 
-fast_ICA2 <- clusterFastICARuns(X=as.matrix(dat_ICA), nbComp=50, alg.type="deflation",
+fast_ICA2 <- clusterFastICARuns(X=as.matrix(dat_ICA), nbComp=40, alg.type="deflation",
                                 nbIt=3, funClus="hclust", method="average")
 
 cor_ICA_fast <- cor(fast_ICA1$S, fast_ICA2$S)
@@ -127,10 +132,10 @@ heatmap.2(cor_ICA_fast, col=redgreen(100),trace="none")
 # # and the extra-cluster similiarity.
 # res <- clusterFastICARuns(X=M, nbComp=2, alg.type="deflation",
 #                           nbIt=3, funClus="hclust", method="ward")
-fast_ICA3 <- clusterFastICARuns(X=as.matrix(dat_ICA), nbComp=50, alg.type="deflation",
+fast_ICA3 <- clusterFastICARuns(X=as.matrix(dat_ICA), nbComp=40, alg.type="deflation",
                           nbIt=3, funClus="hclust", method="ward")
 
-fast_ICA4 <- clusterFastICARuns(X=as.matrix(dat_ICA), nbComp=50, alg.type="deflation",
+fast_ICA4 <- clusterFastICARuns(X=as.matrix(dat_ICA), nbComp=40, alg.type="deflation",
                                 nbIt=3, funClus="hclust", method="ward")
 
 cor_ICA_fast_ward <- cor(fast_ICA3$S, fast_ICA4$S)
@@ -140,18 +145,12 @@ heatmap.2(cor_ICA_fast_ward, col=redgreen(100))
 # cor_ICA_fast_13 <- cor(fast_ICA1$S, fast_ICA3$S)
 # heatmap(cor_ICA_fast_13)
 
-save(fast_ICA1, fast_ICA2, fast_ICA3, fast_ICA4, file = "fastICA_10000g50ICs_leucegene.RData")
-fast <- load("fastICA_10000g50ICs_leucegene.RData")
+save(fast_ICA1, fast_ICA2, fast_ICA3, fast_ICA4, file = "fastICA_10000g40ICs_leucegene.RData")
+fast <- load("fastICA_10000g40ICs_leucegene.RData")
 fast
 
 
 ### correlation between ICs found by fastICA and JADE
 heatmap.2(cor(Jade_ICA1$S, fast_ICA1$S), col = redgreen(100))
 
-
-
-## ------------- investigate IC1 of fastICA1 -------------
-IC1 <- fast_ICA1$S[,1]
-sort(abs(IC1),decreasing = TRUE)[1:20]
-# most of the high projection genes in thic IC is related to sex
 

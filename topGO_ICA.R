@@ -81,17 +81,33 @@ dim(tab)
 
 
 # Figure shows the the subgraph induced by the 5 most significant GOterms 
-# as identified by theelimalgorithm.  Significant nodes are represented 
+# as identified by the elim algorithm.  Significant nodes are represented 
 # as rectangles.  The plotted graphis the upper induced graph generated 
 # by these significant nodes.
-par(cex = 0.15) # adjust size of text in the graph
+par(cex = 0.18) # adjust size of text in the graph
 showSigOfNodes(GOdata, score(resultKS), 
-               firstSigNodes = 5, useInfo ='all')
+               firstSigNodes = 10, useInfo ='all')
 
 
-
+####### Gene Location on chromasome (useful for sex) ################
 # check locations of the genes with high projections
-genes_highproj <- geneList[geneSelFunc(geneList)] 
-genes_highproj[sort(abs(genes_highproj),decreasing = TRUE)]
-locs <- TPM_resm[TPM_resm$Gene %in% names(genes_highproj), c("gene_id","Gene","Location")]
-locs
+genes_highproj <- genes_ic1[geneSelFunc(genes_ic1)] 
+genes_highproj[names(sort(abs(genes_highproj),decreasing = TRUE))]
+locs <- TPM_resm[TPM_resm$gene_id %in% names(genes_highproj), c("gene_id","Gene","Location")]
+# add projection 
+locs$proj <- genes_highproj[match(locs$gene_id, names(genes_highproj))]
+# 10 genes with the highest projection
+locs[order(abs(locs$proj), decreasing = TRUE),][1:10,]
+
+
+
+# chromosome count for locs
+chr_cnt <- table(substr(locs$Location,1,4))
+chr_cnt
+
+# check for HOXA gene in IC9 
+# Several gene expression studies have found a characteristic transcriptional signature in MLL-F AMLs,
+# which includes high expression of most HOXA genes
+hoxa <- substr(locs$Gene,1,4) == "HOXA"
+locs[hoxa,]
+
