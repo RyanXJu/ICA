@@ -14,7 +14,6 @@ expr <- datExpr0[, names(ensembl)]
 dim(expr)
 expr[1:3,1:3]
 
-
 mll <- cyto_group[,"MLL_tras"]
 
 remove <- is.na(mll)
@@ -278,3 +277,4 @@ confusionMatrix(prediction_svmCV, as.factor(y_testing) )
 # significant difference between the counts in these two cells. That is all.
 # Fail to Reject Null Hypothesis: Classifiers have a similar proportion of errors on the test set.
 # Reject Null Hypothesis: Classifiers have a different proportion of errors on the test set.
+
