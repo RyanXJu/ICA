@@ -25,7 +25,7 @@ getwd()
 # as well as gene-to-GO annotations are all collected and storedin a single R object.
 
 ## we found out that IC1 is related to sex
-## IC31 is related to MLL cytogenetic subgroup
+## IC9 is related to MLL cytogenetic subgroup
 IC1 <- Jade_ICA1$S[,1]
 
 # keep only genes with projection > 2.5

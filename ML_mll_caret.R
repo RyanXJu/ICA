@@ -278,3 +278,44 @@ confusionMatrix(prediction_svmCV, as.factor(y_testing) )
 # Fail to Reject Null Hypothesis: Classifiers have a similar proportion of errors on the test set.
 # Reject Null Hypothesis: Classifiers have a different proportion of errors on the test set.
 
+# find the error prediction in testing data
+names(prediction_svmCV) <- rownames(testing)
+prediction_svmCV<-as.character(prediction_svmCV)
+
+compare <- as.data.frame(cbind(prediction_svmCV, y_testing))
+compare[compare$prediction_svmCV != compare$y_testing,]
+
+#             prediction_svmCV y_testing
+# X06H066                0         1
+# allTraits[allTraits$sample_id == "X06H066",]
+
+# find the error prediction in all data
+prediction_svmCV_all <-predict(svmCV, newdata = x)
+table(y, prediction_svmCV_all)
+
+confusionMatrix(prediction_svmCV_all, as.factor(y) )
+names(prediction_svmCV_all) <- rownames(x)
+prediction_svmCV_all<-as.character(prediction_svmCV_all)
+
+compare <- as.data.frame(cbind(prediction_svmCV_all, y))
+compare[compare$prediction_svmCV_all != compare$y,]
+
+# errors
+# X02H033   ENAH
+# X06H066   CASC5
+# X11H095   
+# X16H063
+
+## all MLL samples
+mll_samples<- allTraits[allTraits$cytogenetic.subgroup == "MLL translocations (+MLL FISH positive) (Irrespective of additional cytogenetic abnormalities)",
+          c("sample_id", "status.at.sampling", "tissue",
+            "karyotype", "MLL.PTD.mutation", "Transcriptome_Sequencer",
+            "MLL.Partner", "RNASEQ_protocol")]
+
+table(allTraits$MLL.Partner)
+
+#        CASC5    ELL   ENAH    ENL   GAS7 MLLT10  MLLT3  MLLT4  MLLT6 SEPT_9 
+# 654      1      3      1      4      1      5     11      8      1      2 
+
+# X06H066 is the only one with CASC5
+# 43~49,XX,del(3)(q12),+?6[2],del(8)(p11.2)[9],t(11;15)(q23;q14),-16[3],-20[3],+21[15],+22[2][cp20]
